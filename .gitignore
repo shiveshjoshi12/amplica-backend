@@ -1,0 +1,96 @@
+## Ignore Visual Studio temporary files, build results, and user-specific files
+
+# Build results
+bin/
+obj/
+out/
+artifacts/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Rider
+.idea/
+*.sln.iml
+
+# ASP.NET Core environment files
+appsettings.*.json
+secrets.json
+
+# Entity Framework Migrations (optional)
+#migrations/
+
+# Logs
+*.log
+logs/
+log/
+
+# npm / node_modules (for frontend or hybrid projects)
+node_modules/
+
+# .NET Core project artifacts
+project.lock.json
+project.fragment.lock.json
+*.dbmdl
+*.dbml
+*.mdb
+*.pdb
+*.dll
+*.cache
+*.bak
+*.sql
+*.sqlite
+*.tmp
+*.temp
+
+# Tye
+.tye/
+
+# dotCover
+*.dcvr
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# JetBrains IDE local history
+.localhistory/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+
+# Version control
+*.vspscc
+*.vssscc
+
+# Test & coverage results
+TestResult*/
+*.coverage
+*.coveragexml
+*.testsettings
+
+# Visual Studio .vs folder
+.vs/
+
+# Plain text files (optional - only if you truly want to ignore all .txt files)
+*.txt
+
+*.suo
+*.user
+_ReSharper.*
+bin
+obj
+packages
+# Ignore everything in the Uploads folder except .gitkeep
+Uploads/*
+!Uploads/.gitkeep
+*.appsettings.Development.json
