@@ -18,7 +18,8 @@ namespace BizfreeApp.Services
         Task<TaskDocument> UploadTaskDocumentAsync(int userId, int companyId, int taskId, IFormFile file, string documentName, string? description = null, string? version = null);
         Task<string> SaveCompanyLogoAsync(IFormFile file);
         Task<CompanyDocument> UploadCompanyDocumentAsync(int userId, int companyId, IFormFile file, string documentName, string? description = null, string? version = null, string? category = null);
-
+      
+      System.Threading.Tasks.Task DeleteProfilePhotoAsync(int userId);
     }
 
     public class UploadHandler : IUploadHandler
@@ -409,5 +410,81 @@ namespace BizfreeApp.Services
 
             return newDocument;
         }
+
+// for uploading profile photo, we need to delete the existing photo if it exists before saving the new one. This method will handle that logic.
+     public async System.Threading.Tasks.Task DeleteProfilePhotoAsync(int userId)
+{
+    var companyUser = await _context.CompanyUsers
+        .FirstOrDefaultAsync(cu => cu.UserId == userId);
+
+    if (companyUser == null)
+    {
+        throw new InvalidOperationException(
+            $"Company user with UserId {userId} not found.");
+    }
+
+    if (string.IsNullOrWhiteSpace(companyUser.ProfilePhotoUrl))
+    {
+        throw new InvalidOperationException(
+            "Profile photo not found.");
+    }
+
+    var profilePhotoUrl = companyUser.ProfilePhotoUrl;
+
+    var filePath = Path.Combine(
+        _environment.ContentRootPath,
+        profilePhotoUrl.TrimStart('/')
+            .Replace("/", Path.DirectorySeparatorChar.ToString())
+    );
+
+    // -----------------------------------------
+    // STEP 1: Update database first
+    // -----------------------------------------
+
+    companyUser.ProfilePhotoUrl = null;
+    companyUser.UpdatedAt = DateTime.UtcNow;
+
+    try
+    {
+        await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateException ex)
+    {
+        _logger.LogError(
+            ex,
+            "Database update failed while deleting profile photo for UserId: {UserId}",
+            userId);
+
+        throw new InvalidOperationException(
+            "Profile photo could not be deleted because the database update failed.",
+            ex);
+    }
+
+    // -----------------------------------------
+    // STEP 2: Delete physical file
+    // -----------------------------------------
+
+    try
+    {
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+    }
+    catch (UnauthorizedAccessException ex)
+    {
+        _logger.LogError(
+            ex,
+            "Access denied while deleting profile photo file for UserId: {UserId}",
+            userId);
+    }
+    catch (IOException ex)
+    {
+        _logger.LogError(
+            ex,
+            "File deletion failed for profile photo of UserId: {UserId}",
+            userId);
+    }
+}
     }
     }

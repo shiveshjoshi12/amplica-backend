@@ -849,7 +849,7 @@ public class CompanyUsersController : ControllerBase
             if (!string.IsNullOrWhiteSpace(updateDto.PhoneNumber))
                 companyUser.PhoneNumber = updateDto.PhoneNumber;
 
-            if (updateDto.DateOfBirth.HasValue)
+           
                 companyUser.DateOfBirth = updateDto.DateOfBirth;
 
             if (!string.IsNullOrWhiteSpace(updateDto.MaritalStatus))
@@ -874,7 +874,7 @@ public class CompanyUsersController : ControllerBase
             if (!string.IsNullOrWhiteSpace(updateDto.LastName))
                 companyUser.LastName = updateDto.LastName;
 
-            if (updateDto.AnniversaryDate.HasValue)
+        
                 companyUser.AnniversaryDate = updateDto.AnniversaryDate;
 
             if (updateDto.JoiningDate.HasValue)
@@ -1075,6 +1075,57 @@ public class CompanyUsersController : ControllerBase
             return StatusCode(500, "An error occurred while uploading the profile photo.");
         }
     }
+
+
+
+// delete upload - profile photo endpoint
+
+[HttpDelete("profile-photo/{userId}")]
+[Authorize]
+[ProducesResponseType(typeof(object), 200)]
+[ProducesResponseType(403)]
+[ProducesResponseType(404)]
+[ProducesResponseType(500)]
+public async Task<IActionResult> DeleteProfilePhoto(int userId)
+{
+    var currentUserId = GetCurrentUserIdFromClaims();
+
+    // User can delete only their own profile photo
+    if (currentUserId != userId)
+    {
+        return Forbid();
+    }
+
+    try
+    {
+        await _uploadHandler.DeleteProfilePhotoAsync(userId);
+
+        return Ok(new
+        {
+            message = "Profile photo deleted successfully."
+        });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return NotFound(ex.Message);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(
+            ex,
+            "Error deleting profile photo for UserId: {UserId}",
+            userId);
+
+        return StatusCode(
+            500,
+            "An error occurred while deleting the profile photo.");
+    }
+}
+
+
+
+
+
 
     // ─────────────────────────────────────────────────────────────────────────
     // ADMIN PASSWORD CHANGE ENDPOINTS
