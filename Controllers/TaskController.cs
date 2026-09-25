@@ -240,7 +240,7 @@ namespace BizfreeApp.Controllers
                                                          .Select(s => s.Trim())
                                                          .ToList();
 
-                    if (parsedStatusNames.Any())
+                    if (parsedStatusNames.Any() && !parsedStatusNames.Any(s => s.Equals("All", StringComparison.OrdinalIgnoreCase) || s.Equals("All Tasks", StringComparison.OrdinalIgnoreCase)))
                     {
                         query = query.Where(t => t.StatusNavigation != null && parsedStatusNames.Contains(t.StatusNavigation.Name));
                     }
@@ -803,7 +803,10 @@ namespace BizfreeApp.Controllers
                 if (!string.IsNullOrWhiteSpace(statusNames))
                 {
                     var statusList = statusNames.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
-                    combined = combined.Where(t => t.StatusName != null && statusList.Contains(t.StatusName));
+                    if (statusList.Any() && !statusList.Any(s => s.Equals("All", StringComparison.OrdinalIgnoreCase) || s.Equals("All Tasks", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        combined = combined.Where(t => t.StatusName != null && statusList.Contains(t.StatusName));
+                    }
                 }
 
                 if (priorityId.HasValue)
@@ -967,7 +970,10 @@ namespace BizfreeApp.Controllers
                 if (!string.IsNullOrWhiteSpace(statusNames))
                 {
                     var statusList = statusNames.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
-                    query = query.Where(t => t.StatusNavigation != null && statusList.Contains(t.StatusNavigation.Name));
+                    if (statusList.Any() && !statusList.Any(s => s.Equals("All", StringComparison.OrdinalIgnoreCase) || s.Equals("All Tasks", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        query = query.Where(t => t.StatusNavigation != null && statusList.Contains(t.StatusNavigation.Name));
+                    }
                 }
 
                 if (priorityId.HasValue)

@@ -78,7 +78,7 @@ namespace BizfreeApp.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<PagedResult<object>>>> GetProjects(
      [FromQuery] int page = 1,
-     [FromQuery] int pageSize = 5,
+     [FromQuery] int pageSize = 10,
      [FromQuery] string sortBy = "endDate",
      [FromQuery] string sortOrder = "desc",
      [FromQuery] string? search = null,
@@ -267,7 +267,7 @@ namespace BizfreeApp.Controllers
                         .Select(s => s.Trim().ToLower())
                         .ToList();
 
-                    if (parsedStatus.Any())
+                    if (parsedStatus.Any() && !parsedStatus.Contains("all") && !parsedStatus.Contains("all projects") && !parsedStatus.Contains("all tasks"))
                         baseQuery = baseQuery.Where(p => p.StatusNavigation != null && parsedStatus.Contains(p.StatusNavigation.Name.ToLower()));
                 }
 
